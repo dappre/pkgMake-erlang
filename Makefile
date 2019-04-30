@@ -9,5 +9,6 @@ RPM_RELEASE     = $(RELEASE)
 RPM_PACKAGER    = $(PACKAGER)
 RPM_TARGET_DIR  = $(TARGET_DIR)
 RPM_DISTS_DIR   = $(DISTS_DIR)
+RPM_DEBUGINFO   = 0
 
 include rpmMake/Makefile
