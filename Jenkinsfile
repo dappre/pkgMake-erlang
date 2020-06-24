@@ -75,11 +75,7 @@ def releaseBranch = 'stable'
 // Initialize configuration
 lazyConfig(
 	name: 'pkgmake',
-	inLabels: [
-		//'centos-6',
-		'centos-7',
-		//'ubuntu-16',
-	],
+	inLabels: [ /*'centos6',*/ 'centos7', /*'ubuntu16',*/ ],
 	env: 		[
 		VERSION: false,
 		RELEASE: false,
@@ -145,16 +141,22 @@ lazyStage {
 			}
 			sh(
 """
-DIST=\"\${LAZY_LABEL%%-*}\${LAZY_LABEL##*-}-\$(arch)\"
+DIST="\${LAZY_LABEL}-\$(arch)"
 make \
 VERSION=${version} \
 RELEASE=${release} \
-TARGET_DIR=\$(pwd)/${env.TARGET_DIR} \
-DISTS_DIR=\$(pwd)/${env.TARGET_DIR}/dists/\${DIST} \
+TARGET_DIR="\$(pwd)/\${TARGET_DIR}" \
+DISTS_DIR="\$(pwd)/\${TARGET_DIR}/dists/\${DIST}" \
 LOG_FILE=/dev/stdout
 """
 			)
-			sh("DIST=\"\${LAZY_LABEL%%-*}\${LAZY_LABEL##*-}-\$(arch)\" && sudo yum -y install \$(pwd)/${env.TARGET_DIR}/dists/\${DIST}/*.rpm")
+			sh(
+"""
+DIST="\${LAZY_LABEL}-\$(arch)"
+cd "\${TARGET_DIR}/dists/\${DIST}"
+sudo yum -y install *.rpm
+"""
+			)
 		},
 		in: '*', on: 'docker',
 	]
@@ -178,12 +180,12 @@ lazyStage {
 			currentBuild.displayName = "#${env.BUILD_NUMBER} ${version}-${release}"
 			sh(
 """
-DIST=\"\${LAZY_LABEL%%-*}\${LAZY_LABEL##*-}-\$(arch)\"
+DIST="\${LAZY_LABEL}-\$(arch)"
 make \
 VERSION=${version} \
 RELEASE=${release} \
-TARGET_DIR=\$(pwd)/${env.TARGET_DIR} \
-DISTS_DIR=\$(pwd)/${env.TARGET_DIR}/dists/\${DIST} \
+TARGET_DIR="\$(pwd)/\${TARGET_DIR}" \
+DISTS_DIR="\$(pwd)/\${TARGET_DIR}/dists/\${DIST}" \
 LOG_FILE=/dev/stdout
 """
 			)
